@@ -5,6 +5,7 @@
 
 import LRU from 'lru-cache'
 import { v1, v3, v4, v5 } from 'uuid'
+import { lru_cache } from './lru_cache'
 
 import { atoi, from_bytes, itoa } from './utils'
 
@@ -48,19 +49,21 @@ export class Timeflake {
         return v4(undefined, this._bytes)
     }
 
-    get hex() {
+    @lru_cache(1)
+    get hex(): string {
         return itoa(this.int, HEX, 32)
     }
 
-    get base62() {
+    @lru_cache(1)
+    get base62(): string {
         return itoa(this.int, BASE62, 22)
     }
 
-    get timestamp() {
+    get timestamp(): number {
         return this.int >> 80
     }
 
-    get random() {
+    get random(): number {
         return this.int & MAX_RANDOM
     }
 }
