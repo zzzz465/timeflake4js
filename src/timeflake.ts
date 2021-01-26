@@ -4,16 +4,16 @@
  */
 
 import LRU from 'lru-cache'
-import { v1, v3, v4, v5 } from 'uuid'
+import { v1, v3, v4, v5, stringify } from 'uuid'
 import { lru_cache } from './lru_cache'
 
 import { atoi, from_bytes, itoa } from './utils'
 
-const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-const HEX = "0123456789abcdef"
-const MAX_TIMESTAMP = 281474976710655
-const MAX_RANDOM = 1208925819614629174706175
-const MAX_TIMEFLAKE = 340282366920938463463374607431768211455
+export const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+export const HEX = '0123456789abcdef'
+export const MAX_TIMESTAMP = 281474976710655
+export const MAX_RANDOM = 1208925819614629174706175
+export const MAX_TIMEFLAKE = 340282366920938463463374607431768211455
 
 /**
  * typescript implementation of timeflake written in python.
@@ -45,8 +45,12 @@ export class Timeflake {
     /**
      * returns UUID v4
      */
-    get uuid() {
+    get uuidv4() {
         return v4(undefined, this._bytes)
+    }
+
+    get stringify(): string {
+        return stringify(this._bytes)
     }
 
     @lru_cache(1)

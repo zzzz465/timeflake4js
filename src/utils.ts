@@ -1,13 +1,38 @@
+import { PolyRand } from "poly-crypto"
+
 /**
- * convert uint8 array to unsigned number aligned with Big endian
+ * converts uint8 array to unsigned number aligned with Big endian
  * @param array big order uint8 byte array
  */
-export function from_bytes(array: Uint8Array) {
+export function from_bytes(array: Uint8Array): number {
     return array.reduce((acc, curr) => {
         acc = acc << 8
         acc += curr
         return acc
     }, 0)
+}
+
+/**
+ * converts unsigned number to uint8array
+ * @param value 
+ */
+export function to_bytes(value: number, endian: 'big' | 'little'): Uint8Array {
+    if (value < 0) throw new Error('value is negative')
+    const buffer: number[] = []
+    let index = 0
+    while (value > 0) {
+        buffer.push(value & 0xff)
+        index++
+        value = value >> 8
+    }
+    
+    while (index < 16)
+        buffer[index++] = 0
+
+    if (endian === 'big')
+        return new Uint8Array(buffer).reverse()
+    else
+        return new Uint8Array(buffer)
 }
 
 /**
@@ -66,4 +91,16 @@ export function atoi(value: string, alphabet: string) {
         result = result * base + index[char]
 
     return result
+}
+
+/**
+ * creates timer function which returns current time in nanoseconds
+ */
+export function timer(): () => number {
+    if (process != undefined)
+        return function () { return Math.floor(process.hrtime()[1]) }
+    else
+    // browser?
+    // https://stackoverflow.com/questions/6233927/microsecond-timing-in-javascript
+        return () => window.performance.now()
 }
