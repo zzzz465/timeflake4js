@@ -112,7 +112,7 @@ export function timer(): () => BN {
         return function () { 
             const hrtime = process.hrtime()
             const time = new BN(hrtime[0]) // second
-            time.imul(new BN(10, 9)).iaddn(hrtime[1])
+            time.imul(new BN(10, 9)).iadd(new BN(hrtime[1]))
 
             return time
         }
