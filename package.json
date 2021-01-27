@@ -1,13 +1,18 @@
 {
-  "name": "timeflake4js",
+  "name": "timeflake",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "javascript & typescript implementation of timeflake",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "prepublish": "tsc --build"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "zzzz465 (madeline)",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/zzzz465/timeflake4js",
+    "type": "git"
+  },
   "jest": {
     "transform": {
       "^.+\\.ts$": "ts-jest"
@@ -37,10 +42,7 @@
   },
   "dependencies": {
     "bn.js": "^5.1.3",
-    "double-ended-queue": "^2.1.0-0",
     "eslint": "^7.18.0",
-    "lru-cache": "^6.0.0",
-    "poly-crypto": "^1.0.1",
-    "uuid": "^8.3.2"
+    "lru-cache": "^6.0.0"
   }
 }
