@@ -1,3 +1,6 @@
+import BN from "bn.js"
+import { randHex } from "../utils"
+
 describe('utility test', () => {
     /*
     test('from_bytes 0x00 0x01 to 1', () => {
@@ -16,4 +19,31 @@ describe('utility test', () => {
         const array = to_bytes(255, 'big')
     })
     */
+
+    test('randHex should return different values each time', () => {
+        const others: BN[] = []
+        for (let i = 0; i < 10000; i++) {
+            const num = randHex(10)
+            if (others.find(d => d.eq(num)))
+                throw new Error('duplicate number found')
+            else
+                others.push(num)
+        }
+    })
+
+    test('randHex should return positive values only', () => {
+        for (let i = 0; i < 10000; i++) {
+            expect(randHex(10).gtn(0)).toBeTruthy()
+        }
+    })
+
+    test('randHex should return BN with requested length', () => {
+        for (let len = 1; len <= 10; len++) {
+            for (let i = 0; i < 10000; i++) {
+                const num = randHex(len)
+                const hex = num.toString('hex')
+                expect(hex.length).toBe(len)
+            }
+        }
+    })
 })

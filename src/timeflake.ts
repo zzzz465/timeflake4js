@@ -4,11 +4,9 @@
  */
 
 import BN from 'bn.js'
-import LRU from 'lru-cache'
-import { v1, v3, v4, v5, stringify } from 'uuid'
 import { lru_cache } from './lru_cache'
 
-import { atoi, itoa } from './utils'
+import { itoa } from './utils'
 
 export const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 export const HEX = '0123456789abcdef'
@@ -40,18 +38,20 @@ export class Timeflake {
     }
 
     get int(): BN {
-        return this._bytes
+        return this._bytes.clone()
     }
 
     /**
      * returns UUID v4
      */
-    get uuidv4() {
-        return v4(undefined, this.bytes)
-    }
-
-    get stringify(): string {
-        return stringify(this.uuidv4)
+    @lru_cache(1)
+    get uuid(): string {
+        return [
+            this.hex.slice(0, 8), 
+            this.hex.slice(8, 12), 
+            this.hex.slice(12, 16), 
+            this.hex.slice(16, 20), 
+            this.hex.slice(20)].join('-')
     }
 
     @lru_cache(1)
