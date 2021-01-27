@@ -1,6 +1,5 @@
 import BN from 'bn.js'
-
-const zero = new BN(0)
+import { HEX } from './timeflake'
 
 /**
  * converts uint8 array to unsigned number aligned with Big endian
@@ -46,8 +45,11 @@ export function to_bytes(value: BN, endian: 'big' | 'little'): Uint8Array {
  * @param padding 
  */
 export function itoa(value: BN | number, alphabet: string, padding?: number) {
+    const zero = new BN(0)
     if (typeof value === 'number')
         value = new BN(value)
+    else
+        value = value.clone()
 
     if (value.lt(zero))
         throw Error('Only possive numbers are allowed')
@@ -77,22 +79,27 @@ export function itoa(value: BN | number, alphabet: string, padding?: number) {
  */
 export function atoi(value: string, alphabet: string): BN {
     if (value === alphabet.charAt(0))
-        return zero
+        return new BN(0)
 
     function index_alphabet_map(value: string) {
-        const obj: any = {}
+        const map = new Map<string, number>()
         for (let i = 0; i < value.length; i++)
-            obj[i] = value.charAt(i)
+            map.set(value.charAt(i), i)
 
-        return obj
+        return map
     }
 
-    const index = index_alphabet_map(alphabet)
-    const result = zero
+    const map = index_alphabet_map(alphabet)
+    const result = new BN(0)
     const base = alphabet.length
 
-    for (const char of value)
-        result.imuln(base).iaddn(index[char])
+    for (const char of value) {
+        const val = map.get(char)
+        if (val !== undefined)
+            result.imuln(base).iaddn(val)
+        else
+            throw new Error(`char ${char} is not exist on alphabet parameter, param: ${alphabet}`)
+    }
 
     return result
 }
@@ -102,9 +109,28 @@ export function atoi(value: string, alphabet: string): BN {
  */
 export function timer(): () => BN {
     if (process != undefined)
-        return function () { return new BN(Math.floor(process.hrtime()[1])) }
+        return function () { 
+            const hrtime = process.hrtime()
+            const time = new BN(hrtime[0]) // second
+            time.imul(new BN(10, 9)).iaddn(hrtime[1])
+
+            return time
+        }
     else
     // browser?
     // https://stackoverflow.com/questions/6233927/microsecond-timing-in-javascript
         return () => new BN(window.performance.now())
+}
+
+// TODO: if the environment is Node.js, we could use crypto module...
+/**
+ * generates 10 digit 
+ */
+export function randHex(len: number): BN {
+    const digits: string[] = [HEX[Math.floor(Math.random() * 15) + 1]]
+    for (let i = 1; i < len; i++) {
+        digits.push(HEX[Math.floor(Math.random() * 16)])
+    }
+
+    return new BN(digits.join(''), 'hex')
 }
