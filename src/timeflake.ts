@@ -3,54 +3,55 @@
  * license: MIT License
  */
 
+import BN from 'bn.js'
 import LRU from 'lru-cache'
 import { v1, v3, v4, v5, stringify } from 'uuid'
 import { lru_cache } from './lru_cache'
 
-import { atoi, from_bytes, itoa } from './utils'
+import { atoi, itoa } from './utils'
 
 export const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 export const HEX = '0123456789abcdef'
-export const MAX_TIMESTAMP = 281474976710655
-export const MAX_RANDOM = 1208925819614629174706175
-export const MAX_TIMEFLAKE = 340282366920938463463374607431768211455
+export const MAX_TIMESTAMP = new BN('281474976710655')
+export const MAX_RANDOM = new BN('1208925819614629174706175')
+export const MAX_TIMEFLAKE = new BN('340282366920938463463374607431768211455')
 
 /**
  * typescript implementation of timeflake written in python.
  */
 export class Timeflake {
-    private _bytes: Uint8Array
+    private _bytes: BN
 
     /**
      * creates Timeflake object from given bytes array.
      * @throws throws Error if flake is not valid.
      * @param from_bytes 
      */
-    constructor(from_bytes: Uint8Array) {
+    constructor(from_bytes: BN) {
         this._bytes = from_bytes
 
-        const as_int = this.int
-        if (as_int < 0 || as_int >= MAX_TIMEFLAKE)
+        const as_BN = this.int
+        if (as_BN.lt(new BN(0)) || as_BN.gte(new BN(MAX_TIMEFLAKE)))
             throw new Error('Invalid flake provided')
     }
 
     get bytes(): Uint8Array {
-        return this._bytes
+        return this._bytes.toArrayLike(Buffer, 'be')
     }
 
-    get int(): number {
-        return from_bytes(this._bytes)
+    get int(): BN {
+        return this._bytes
     }
 
     /**
      * returns UUID v4
      */
     get uuidv4() {
-        return v4(undefined, this._bytes)
+        return v4(undefined, this.bytes)
     }
 
     get stringify(): string {
-        return stringify(this._bytes)
+        return stringify(this.uuidv4)
     }
 
     @lru_cache(1)
@@ -63,11 +64,11 @@ export class Timeflake {
         return itoa(this.int, BASE62, 22)
     }
 
-    get timestamp(): number {
-        return this.int >> 80
+    get timestamp(): BN {
+        return this.int.shrn(80)
     }
 
-    get random(): number {
-        return this.int & MAX_RANDOM
+    get random(): BN {
+        return this.int.and(MAX_RANDOM)
     }
 }
