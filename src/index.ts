@@ -1,5 +1,5 @@
 import { Timeflake } from './timeflake'
-import { atoi, timer } from './utils'
+import { atoi, randHex, timer } from './utils'
 import { PolyRand } from 'poly-crypto'
 import { BASE62, HEX } from './timeflake'
 import BN from 'bn.js'
@@ -16,6 +16,10 @@ interface arg_int {
     type: 'int'
     value: number
 }
+interface arg_BN {
+    type: 'BN',
+    value: BN
+}
 interface arg_hex {
     type: 'hex'
     value: string
@@ -30,6 +34,7 @@ type parse_arg =
     | arg_int
     | arg_hex
     | arg_bytes
+    | arg_BN
 
 export function parse(arg: parse_arg): Timeflake {
     let res: BN | undefined = undefined
@@ -47,7 +52,11 @@ export function parse(arg: parse_arg): Timeflake {
         } break
 
         case 'hex': {
-            res = atoi(arg.value, HEX)
+            res = atoi(arg.value.toLowerCase(), HEX)
+        } break
+
+        case 'BN': {
+            res = arg.value.clone()
         } break
     }
 
@@ -64,7 +73,7 @@ const getTime = timer()
  */
 export function random() {
     const timestamp = getTime()
-    const rand = new BN(PolyRand.hex(10))
+    const rand = randHex(10)
     // const rand = parseInt('0x' + PolyRand.hex(10))
     const value = timestamp.ishln(80).ior(rand)
     return new Timeflake(value)
@@ -77,8 +86,8 @@ export function random() {
  */
 export function from_values(timestamp: BN, random?: BN) {
     if (!random)
-        random = new BN(PolyRand.hex(10))
+        random = randHex(10)
 
-    const value = timestamp.shln(80).and(random)
+    const value = timestamp.shln(80).or(random)
     return new Timeflake(value)
 }
