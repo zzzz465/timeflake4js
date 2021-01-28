@@ -108,11 +108,15 @@ export function atoi(value: string, alphabet: string): BN {
  * creates timer function which returns current time in nanoseconds
  */
 export function timer(): () => BN {
+    return function () {
+        return new BN(Date.now())
+    }
+    /*
     if (process != undefined)
         return function () { 
             const hrtime = process.hrtime()
             const time = new BN(hrtime[0]) // second
-            time.imul(new BN(10, 9)).iadd(new BN(hrtime[1]))
+            time.imul(new BN(10).pow(new BN(5))).iadd(new BN(hrtime[1]))
 
             return time
         }
@@ -120,6 +124,7 @@ export function timer(): () => BN {
     // browser?
     // https://stackoverflow.com/questions/6233927/microsecond-timing-in-javascript
         return () => new BN(window.performance.now())
+    */
 }
 
 // TODO: if the environment is Node.js, we could use crypto module...

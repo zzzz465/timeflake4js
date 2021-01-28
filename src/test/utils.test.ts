@@ -1,5 +1,5 @@
 import BN from "bn.js"
-import { randHex } from "../utils"
+import { randHex, timer } from "../utils"
 
 describe('utility test', () => {
     /*
@@ -44,6 +44,27 @@ describe('utility test', () => {
                 const hex = num.toString('hex')
                 expect(hex.length).toBe(len)
             }
+        }
+    })
+
+    test("timer function's value should return ascending values", async () => {
+        const getTime = timer()
+        const times = []
+        times.push(getTime())
+        await new Promise(res => setTimeout(res, 100))
+        times.push(getTime())
+        await new Promise(res => setTimeout(res, 200))
+        times.push(getTime())
+        await new Promise(res => setTimeout(res, 300))
+        times.push(getTime())
+        await new Promise(res => setTimeout(res, 400))
+        times.push(getTime())
+        await new Promise(res => setTimeout(res, 500))
+
+        for (let i = 0; i < times.length - 1; i++) {
+            const time1 = times[i]
+            const time2 = times[i + 1]
+            expect(time2.gte(time1)).toBeTruthy()
         }
     })
 })
