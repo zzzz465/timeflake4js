@@ -1,5 +1,9 @@
 # Timeflake4js
+![GitHub](https://img.shields.io/github/license/zzzz465/timeflake4js)
+![npm](https://img.shields.io/npm/v/timeflake)
+![npm](https://img.shields.io/npm/dw/timeflake)
 
+  
 javscript & typescript implementation of [Timeflake](https://github.com/anthonynsimon/timeflake)  
 due to timer function, this module is Node.js only. only, web environment is not supported yet.  
 
