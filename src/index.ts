@@ -36,6 +36,11 @@ type parse_arg =
     | arg_bytes
     | arg_BN
 
+/**
+    parse an existing flake, 
+    @param arg parse arg, see documentation
+    @see [available arguments](https://github.com/zzzz465/timeflake4js#example)
+*/
 export function parse(arg: parse_arg): Timeflake {
     let res: BN | undefined = undefined
     switch (arg.type) {
@@ -69,7 +74,8 @@ export function parse(arg: parse_arg): Timeflake {
 const getTime = timer()
 
 /**
- * 
+ * generates random timeflake
+ * @returns Timeflake instance
  */
 export function random() {
     const timestamp = getTime()
@@ -80,7 +86,7 @@ export function random() {
 }
 
 /**
- * 
+ * generate timeflake from given values
  * @param timestamp 
  * @param random 
  */
