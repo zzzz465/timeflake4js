@@ -5,7 +5,6 @@
 
   
 javscript & typescript implementation of [Timeflake](https://github.com/anthonynsimon/timeflake)  
-due to timer function, this module is Node.js only. only, web environment is not supported yet.  
 
 > Timeflake is a 128-bit, roughly-ordered, URL-safe UUID. Inspired by Twitter's Snowflake, Instagram's ID and Firebase's PushID.
 
