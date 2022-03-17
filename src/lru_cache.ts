@@ -5,6 +5,7 @@ import Cache from 'lru-cache'
 /**
  * add lru_cache with specific size
  * @param max max size of lru_cache
+ * @deprecated possible memory leak and duplicated propertyKey issue.
  */
 export function lru_cache(max: number) {
     const cache = new Cache({ max })

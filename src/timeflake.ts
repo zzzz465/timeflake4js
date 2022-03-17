@@ -41,29 +41,52 @@ export class Timeflake {
         return this._bytes.clone()
     }
 
+    private _uuid: string = ''
+
     /**
      * returns UUID v4
      */
-    @lru_cache(1)
     get uuid(): string {
-        return [
-            this.hex.slice(0, 8), 
+        if (!this._uuid) {
+            this._uuid = [this.hex.slice(0, 8), 
             this.hex.slice(8, 12), 
             this.hex.slice(12, 16), 
             this.hex.slice(16, 20), 
             this.hex.slice(20)].join('-')
+        }
+
+        return this._uuid
     }
 
-    @lru_cache(1)
+    private _hex: string = ''
+
+    /**
+     * returns hex representation of the timeflake instance.
+     */
     get hex(): string {
-        return itoa(this.int, HEX, 32)
+        if (!this._hex) {
+            this._hex = itoa(this.int, HEX, 32)
+        }
+
+        return this._hex
     }
 
-    @lru_cache(1)
+    private _base32: string = ''
+
+    /**
+     * returns base32 representation of the timeflake instance.
+     */
     get base62(): string {
-        return itoa(this.int, BASE62, 22)
+        if (!this._base32) {
+            this._base32 = itoa(this.int, BASE62, 22)
+        }
+        
+        return this._base32
     }
 
+    /**
+     * returns timestamp of the timeflake instance.
+     */
     get timestamp(): BN {
         return this.int.shrn(80)
     }
